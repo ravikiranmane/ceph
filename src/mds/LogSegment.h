@@ -33,6 +33,38 @@ class CDentry;
 class MDS;
 class MDSlaveUpdate;
 
+class C_LogSegment_backtrace_finish : public Context {
+  CInode *inode;
+  Context *finisher;
+ public:
+  elist<C_LogSegment_backtrace_finish*>::item entry;
+
+  C_LogSegment_backtrace_finish(CInode *i, elist<C_LogSegment_backtrace_finish*> &l) : inode(i), finisher(NULL) {
+    if (!inode->state_test(CInode::STATE_DIRTYPARENT)) {
+      inode->state_set(CInode::STATE_DIRTYPARENT);
+      inode->get(CInode::PIN_DIRTYPARENT);
+    }
+    l.push_back(&entry);
+  }
+  virtual ~C_LogSegment_backtrace_finish() {
+    delete finisher;
+  }
+
+  void finish(int r) {
+    entry.remove_myself();
+    if (inode->state_test(CInode::STATE_DIRTYPARENT)) {
+      inode->state_clear(CInode::STATE_DIRTYPARENT);
+      inode->put(CInode::PIN_DIRTYPARENT);
+    }
+    if (finisher)
+      finisher->finish(r);
+  }
+  void replace_finisher(Context *f) {
+    delete finisher;
+    finisher = f;
+  }
+};
+
 class LogSegment {
  public:
   uint64_t offset, end;
@@ -45,10 +77,11 @@ class LogSegment {
   elist<CDentry*> dirty_dentries;
 
   elist<CInode*>  open_files;
-  elist<CInode*>  renamed_files;
   elist<CInode*>  dirty_dirfrag_dir;
   elist<CInode*>  dirty_dirfrag_nest;
   elist<CInode*>  dirty_dirfrag_dirfragtree;
+
+  elist<C_LogSegment_backtrace_finish*> backtraces;
 
   elist<MDSlaveUpdate*> slave_updates;
   
@@ -76,10 +109,10 @@ class LogSegment {
     dirty_inodes(member_offset(CInode, item_dirty)),
     dirty_dentries(member_offset(CDentry, item_dirty)),
     open_files(member_offset(CInode, item_open_file)),
-    renamed_files(member_offset(CInode, item_renamed_file)),
     dirty_dirfrag_dir(member_offset(CInode, item_dirty_dirfrag_dir)),
     dirty_dirfrag_nest(member_offset(CInode, item_dirty_dirfrag_nest)),
     dirty_dirfrag_dirfragtree(member_offset(CInode, item_dirty_dirfrag_dirfragtree)),
+    backtraces(member_offset(C_LogSegment_backtrace_finish, entry)),
     slave_updates(0), // passed to begin() manually
     inotablev(0), sessionmapv(0)
   { }

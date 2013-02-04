@@ -179,12 +179,10 @@ void LogSegment::try_to_expire(MDS *mds, C_GatherBuilder &gather_bld)
     }
   }
 
-  // parent pointers on renamed dirs
-  for (elist<CInode*>::iterator p = renamed_files.begin(); !p.end(); ++p) {
-    CInode *in = *p;
-    dout(10) << "try_to_expire waiting for dir parent pointer update on " << *in << dendl;
-    assert(in->state_test(CInode::STATE_DIRTYPARENT));
-    in->store_parent(gather_bld.new_sub());
+  // backtraces
+  for (elist<C_LogSegment_backtrace_finish*>::iterator p = backtraces.begin(); !p.end(); ++p) {
+    C_LogSegment_backtrace_finish* fin = *p;
+    fin->replace_finisher(gather_bld.new_sub());
   }
 
   // slave updates
@@ -416,6 +414,32 @@ void EMetaBlob::fullbit::update_inode(MDS *mds, CInode *in)
   in->old_inodes = old_inodes;
 }
 
+void EMetaBlob::store_backtrace(MDS *mds, LogSegment *logseg, int64_t old_pool, CInode *in) {
+
+  // check if the pool has changed due to a setlayout, and write backtraces if so
+  if (old_pool != in->inode.layout.fl_pg_pool) {
+    C_LogSegment_backtrace_finish *btfin = new C_LogSegment_backtrace_finish(in, logseg->backtraces);
+    in->store_backtrace(in->inode.layout.fl_pg_pool, btfin);
+
+    C_LogSegment_backtrace_finish *rbtfin = new C_LogSegment_backtrace_finish(in, logseg->backtraces);
+    in->store_backtrace(old_pool, rbtfin, in->inode.layout.fl_pg_pool);
+  }
+
+  // store backtrace for allocated inos (create, mkdir, symlink, mknod)
+  if (allocated_ino) {
+    C_LogSegment_backtrace_finish *btfin = new C_LogSegment_backtrace_finish(in, logseg->backtraces);
+    if (in->inode.is_dir()) {
+      in->store_backtrace(mds->mdsmap->get_metadata_pool(), btfin);
+    } else {
+      in->store_backtrace(in->inode.layout.fl_pg_pool, btfin);
+    }
+  }
+
+  // if this was a rename, update backtrace
+
+}
+
+
 void EMetaBlob::replay(MDS *mds, LogSegment *logseg)
 {
   dout(10) << "EMetaBlob.replay " << lump_map.size() << " dirlumps by " << client_name << dendl;
@@ -427,7 +451,9 @@ void EMetaBlob::replay(MDS *mds, LogSegment *logseg)
     bool isnew = in ? false:true;
     if (!in)
       in = new CInode(mds->mdcache, true);
+    int64_t old_pool = in->inode.layout.fl_pg_pool;
     root->update_inode(mds, in);
+    store_backtrace(mds, logseg, old_pool, in);
     if (isnew)
       mds->mdcache->add_inode(in);
     if (root->dirty) in->_mark_dirty(logseg);

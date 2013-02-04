@@ -670,6 +670,7 @@ private:
     out << "]";
   }
 
+  void store_backtrace(MDS *mds, LogSegment *logseg, int64_t old_pool, CInode *in);
   void update_segment(LogSegment *ls);
   void replay(MDS *mds, LogSegment *ls=0);
 };
