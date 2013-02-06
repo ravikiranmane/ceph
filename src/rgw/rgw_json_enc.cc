@@ -20,6 +20,7 @@ void RGWObjManifestPart::dump(Formatter *f) const
 
 void RGWObjManifest::dump(Formatter *f) const
 {
+  f->open_object_section("obj_manifest");
   map<uint64_t, RGWObjManifestPart>::const_iterator iter = objs.begin();
   f->open_array_section("objs");
   for (; iter != objs.end(); ++iter) {
@@ -30,6 +31,7 @@ void RGWObjManifest::dump(Formatter *f) const
   }
   f->close_section();
   f->dump_unsigned("obj_size", obj_size);
+  f->close_section();
 }
 
 void rgw_log_entry::dump(Formatter *f) const
@@ -66,33 +68,33 @@ void rgw_intent_log_entry::dump(Formatter *f) const
 
 void ACLPermission::dump(Formatter *f) const
 {
+  f->open_object_section("permission");
   f->dump_int("flags", flags);
+  f->close_section();
 }
 
 void ACLGranteeType::dump(Formatter *f) const
 {
+  f->open_object_section("type");
   f->dump_unsigned("type", type);
+  f->close_section();
 }
 
 void ACLGrant::dump(Formatter *f) const
 {
   f->open_object_section("type");
   type.dump(f);
-  f->close_section();
-
   f->dump_string("id", id);
   f->dump_string("email", email);
-
-  f->open_object_section("permission");
   permission.dump(f);
-  f->close_section();
-
   f->dump_string("name", name);
   f->dump_int("group", (int)group);
+  f->close_section();
 }
 
 void RGWAccessControlList::dump(Formatter *f) const
 {
+  f->open_object_section("acl");
   map<string, int>::const_iterator acl_user_iter = acl_user_map.begin();
   f->open_array_section("acl_user_map");
   for (; acl_user_iter != acl_user_map.end(); ++acl_user_iter) {
@@ -124,32 +126,36 @@ void RGWAccessControlList::dump(Formatter *f) const
     f->close_section();
   }
   f->close_section();
+  f->close_section();
 }
 
 void ACLOwner::dump(Formatter *f) const
 {
+  f->open_object_section("owner");
   f->dump_string("id", id);
   f->dump_string("display_name", display_name);
+  f->close_section();
 }
 
 void RGWAccessControlPolicy::dump(Formatter *f) const
 {
-  f->open_object_section("acl");
+  f->open_object_section("policy");
   acl.dump(f);
-  f->close_section();
-  f->open_object_section("owner");
   owner.dump(f);
   f->close_section();
 }
 
 void ObjectMetaInfo::dump(Formatter *f) const
 {
+  f->open_object_section("obj_meta_info");
   f->dump_unsigned("size", size);
   f->dump_stream("mtime") << mtime;
+  f->close_section();
 }
 
 void ObjectCacheInfo::dump(Formatter *f) const
 {
+  f->open_object_section("obj_cache_info");
   f->dump_int("status", status);
   f->dump_unsigned("flags", flags);
   f->open_object_section("data");
@@ -174,21 +180,15 @@ void ObjectCacheInfo::dump(Formatter *f) const
     f->close_section();
   }
   f->close_section();
-  f->open_object_section("meta");
   meta.dump(f);
   f->close_section();
-
 }
 
 void RGWCacheNotifyInfo::dump(Formatter *f) const
 {
   f->dump_unsigned("op", op);
-  f->open_object_section("obj");
   obj.dump(f);
-  f->close_section();
-  f->open_object_section("obj_info");
   obj_info.dump(f);
-  f->close_section();
   f->dump_unsigned("ofs", ofs);
   f->dump_string("ns", ns);
 }
@@ -428,48 +428,52 @@ void RGWUserInfo::decode_json(JSONObj *obj)
 
 void rgw_bucket::dump(Formatter *f) const
 {
+  f->open_object_section("bucket");
   f->dump_string("name", name);
   f->dump_string("pool", pool);
   f->dump_string("marker", marker);
   f->dump_string("bucket_id", bucket_id);
+  f->close_section();
 }
 
 void RGWBucketInfo::dump(Formatter *f) const
 {
-  f->open_object_section("bucket");
+  f->open_object_section("bucket_info");
   bucket.dump(f);
-  f->close_section();
   f->dump_string("owner", owner);
   f->dump_unsigned("flags", flags);
+  f->close_section();
 }
 
 void RGWBucketEnt::dump(Formatter *f) const
 {
-  f->open_object_section("bucket");
+  f->open_object_section("bucket_entry");
   bucket.dump(f);
-  f->close_section();
   f->dump_unsigned("size", size);
   f->dump_unsigned("size_rounded", size_rounded);
   f->dump_stream("mtime") << mtime;
   f->dump_unsigned("count", count);
+  f->close_section();
 }
 
 void RGWUploadPartInfo::dump(Formatter *f) const
 {
+  f->open_object_section("upload_part_info");
   f->dump_unsigned("num", num);
   f->dump_unsigned("size", size);
   f->dump_string("etag", etag);
   f->dump_stream("modified") << modified;
+  f->close_section();
 }
 
 void rgw_obj::dump(Formatter *f) const
 {
-  f->open_object_section("bucket");
+  f->open_object_section("rgw_obj");
   bucket.dump(f);
-  f->close_section();
   f->dump_string("key", key);
   f->dump_string("ns", ns);
   f->dump_string("object", object);
+  f->close_section();
 }
 
 
