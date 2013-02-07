@@ -108,25 +108,6 @@ inline string ccap_string(int cap)
 }
 
 
-/**
- * Default file layout stuff. This lets us set a default file layout on
- * a directory inode that all files in its tree will use on creation.
- */
-struct file_layout_policy_t {
-  ceph_file_layout layout;
-
-  file_layout_policy_t() {
-    memset(&layout, 0, sizeof(layout));
-  }
-
-  void encode(bufferlist &bl) const;
-  void decode(bufferlist::iterator& bl);
-  void dump(Formatter *f) const;
-  static void generate_test_instances(list<file_layout_policy_t*>& ls);
-};
-WRITE_CLASS_ENCODER(file_layout_policy_t);
-
-
 struct scatter_info_t {
   version_t version;
 
@@ -391,6 +372,15 @@ struct inode_t {
     truncate_pending++;
   }
 
+  bool has_layout() const {
+    // why on earth is there no converse of memchr() in string.h?
+    const char *p = (const char *)&layout;
+    for (size_t i = 0; i < sizeof(layout); i++)
+      if (p[i] != '\0')
+	return true;
+    return false;
+  }
+
   uint64_t get_layout_size_increment() {
     return (uint64_t)layout.fl_object_size * (uint64_t)layout.fl_stripe_count;
   }
@@ -434,6 +424,7 @@ struct inode_t {
 };
 WRITE_CLASS_ENCODER(inode_t)
 
+void dump(const ceph_file_layout& l, Formatter *f);
 
 /*
  * old_inode_t
