@@ -205,13 +205,16 @@ int main(int argc, char **argv)
 
     found = true;
 
-    pg_info_t info;
+    pg_info_t info(pgid);
     map<epoch_t,pg_interval_t> past_intervals;
     hobject_t biginfo_oid = OSD::make_pg_biginfo_oid(pgid);
     interval_set<snapid_t> snap_collections;
+    //XXX: This needs OSD function to generate
+    hobject_t biginfos_oid(sobject_t("biginfos", CEPH_NOSNAP));
+    hobject_t infos_oid(sobject_t("infos", CEPH_NOSNAP));
 
     int r = PG::read_info(fs, coll, bl, info, past_intervals, biginfo_oid,
-      snap_collections);
+      infos_oid, biginfos_oid, snap_collections);
     if (r < 0) {
       cerr << "read_info error " << cpp_strerror(-r) << std::endl;
       ret = 1;

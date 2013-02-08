@@ -379,6 +379,7 @@ public:
   void unlock() {
     //generic_dout(0) << this << " " << info.pgid << " unlock" << dendl;
     assert(!dirty_info);
+    assert(!dirty_big_info);
     assert(!dirty_log);
     _lock.Unlock();
   }
@@ -417,7 +418,7 @@ public:
   }
 
 
-  bool dirty_info, dirty_log;
+  bool dirty_info, dirty_big_info, dirty_log;
 
 public:
   // pg state
@@ -1786,8 +1787,8 @@ public:
 
   std::string get_corrupt_pg_log_name() const;
   static int read_info(ObjectStore *store, const coll_t coll,
-    bufferlist &bl, pg_info_t &info, map<epoch_t,pg_interval_t> &past_intervals,
-    hobject_t &biginfo_oid, interval_set<snapid_t>  &snap_collections);
+    bufferlist &bl, pg_info_t &info, map<epoch_t,pg_interval_t> &past_intervals, hobject_t &biginfo_oid,
+    hobject_t &infos_oid, hobject_t &biginfos_oid, interval_set<snapid_t>  &snap_collections);
   void read_state(ObjectStore *store, bufferlist &bl);
   static epoch_t peek_map_epoch(ObjectStore *store,
 				coll_t coll, bufferlist *bl);
