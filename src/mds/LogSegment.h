@@ -40,10 +40,7 @@ class C_LogSegment_backtrace_finish : public Context {
   elist<C_LogSegment_backtrace_finish*>::item entry;
 
   C_LogSegment_backtrace_finish(CInode *i, elist<C_LogSegment_backtrace_finish*> &l) : inode(i), finisher(NULL) {
-    if (!inode->state_test(CInode::STATE_DIRTYPARENT)) {
-      inode->state_set(CInode::STATE_DIRTYPARENT);
-      inode->get(CInode::PIN_DIRTYPARENT);
-    }
+    inode->get(CInode::PIN_DIRTYPARENT);
     l.push_back(&entry);
   }
   virtual ~C_LogSegment_backtrace_finish() {
@@ -52,10 +49,7 @@ class C_LogSegment_backtrace_finish : public Context {
 
   void finish(int r) {
     entry.remove_myself();
-    if (inode->state_test(CInode::STATE_DIRTYPARENT)) {
-      inode->state_clear(CInode::STATE_DIRTYPARENT);
-      inode->put(CInode::PIN_DIRTYPARENT);
-    }
+    inode->put(CInode::PIN_DIRTYPARENT);
     if (finisher)
       finisher->finish(r);
   }
