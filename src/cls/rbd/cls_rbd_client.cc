@@ -631,5 +631,11 @@ namespace librbd {
       ::encode(id, in);
       return ioctx->exec(oid, "rbd", "dir_rename_image", in, out);
     }
+
+    int returnOne()
+    {
+      return 1;
+    }
+
   } // namespace cls_client
 } // namespace librbd

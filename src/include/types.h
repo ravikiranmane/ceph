@@ -69,7 +69,7 @@ using namespace __gnu_cxx;
 #include "object.h"
 #include "intarith.h"
 
-#include "acconfig.h"
+#include "../acconfig.h"
 
 #include "assert.h"
 

@@ -1,0 +1,71 @@
+** going verbose **
+=== mon.a === 
+Stopping Ceph mon.a on ubuntu...done
+=== mon.b === 
+Stopping Ceph mon.b on ubuntu...done
+=== mon.c === 
+Stopping Ceph mon.c on ubuntu...done
+=== mds.a === 
+Stopping Ceph mds.a on ubuntu...done
+=== mds.b === 
+Stopping Ceph mds.b on ubuntu...done
+=== mds.c === 
+Stopping Ceph mds.c on ubuntu...done
+=== osd.0 === 
+Stopping Ceph osd.0 on ubuntu...done
+ip 127.0.0.1
+
+WARNING: hostname resolves to loopback; remote hosts will not be able to
+  connect.  either adjust /etc/hosts, or edit this script to use your
+  machine's real IP.
+
+creating /home/ravikiran/ceph/src/keyring
+./monmaptool --create --clobber --add a 127.0.0.1:6789 --add b 127.0.0.1:6790 --add c 127.0.0.1:6791 --print /tmp/ceph_monmap.5621
+./monmaptool: monmap file /tmp/ceph_monmap.5621
+./monmaptool: generated fsid 245e11df-abce-4c55-88bd-a7d1eb52176d
+epoch 0
+fsid 245e11df-abce-4c55-88bd-a7d1eb52176d
+last_changed 2013-04-06 18:26:46.124970
+created 2013-04-06 18:26:46.124970
+0: 127.0.0.1:6789/0 mon.a
+1: 127.0.0.1:6790/0 mon.b
+2: 127.0.0.1:6791/0 mon.c
+./monmaptool: writing epoch 0 to /tmp/ceph_monmap.5621 (3 monitors)
+rm -rf dev/mon.a
+./ceph-mon --mkfs -c ceph.conf -i a --monmap=/tmp/ceph_monmap.5621 --keyring=/home/ravikiran/ceph/src/keyring
+./ceph-mon: created monfs at dev/mon.a for mon.a
+rm -rf dev/mon.b
+./ceph-mon --mkfs -c ceph.conf -i b --monmap=/tmp/ceph_monmap.5621 --keyring=/home/ravikiran/ceph/src/keyring
+./ceph-mon: created monfs at dev/mon.b for mon.b
+rm -rf dev/mon.c
+./ceph-mon --mkfs -c ceph.conf -i c --monmap=/tmp/ceph_monmap.5621 --keyring=/home/ravikiran/ceph/src/keyring
+./ceph-mon: created monfs at dev/mon.c for mon.c
+./ceph-mon -i a -c ceph.conf
+starting mon.a rank 0 at 127.0.0.1:6789/0 mon_data dev/mon.a fsid 245e11df-abce-4c55-88bd-a7d1eb52176d
+./ceph-mon -i b -c ceph.conf
+starting mon.b rank 1 at 127.0.0.1:6790/0 mon_data dev/mon.b fsid 245e11df-abce-4c55-88bd-a7d1eb52176d
+./ceph-mon -i c -c ceph.conf
+starting mon.c rank 2 at 127.0.0.1:6791/0 mon_data dev/mon.c fsid 245e11df-abce-4c55-88bd-a7d1eb52176d
+add osd0 168a486e-2cdf-4553-b80d-e7ece60e8ba2
+0
+updated item id 0 name 'osd.0' weight 1 at location {host=localhost,rack=localrack,root=default} to crush map
+adding osd0 key to auth repository
+added key for osd.0
+start osd0
+./ceph-osd -i 0 -c ceph.conf
+starting osd.0 at :/0 osd_data dev/osd0 dev/osd0.journal
+creating dev/mds.a/keyring
+added key for mds.a
+./ceph-mds -i a -c ceph.conf
+starting mds.a at :/0
+creating dev/mds.b/keyring
+added key for mds.b
+./ceph-mds -i b -c ceph.conf
+starting mds.b at :/0
+creating dev/mds.c/keyring
+added key for mds.c
+./ceph-mds -i c -c ceph.conf
+starting mds.c at :/0
+./ceph -c ceph.conf -k /home/ravikiran/ceph/src/keyring mds set_max_mds 3
+max_mds = 3
+started.  stop.sh to stop.  see out/* (e.g. 'tail -f out/????') for debug output.

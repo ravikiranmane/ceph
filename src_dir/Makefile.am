@@ -370,7 +370,7 @@ noinst_LIBRARIES += librgw.a
 
 my_radosgw_ldadd = \
        libglobal.la librgw.a librados.la libcls_rgw_client.a \
-       libcls_lock_client.a libcls_refcount_client.a libcls_sample_demo_client.a -lcurl -lexpat \
+       libcls_lock_client.a libcls_refcount_client.a -lcurl -lexpat \
        $(PTHREAD_LIBS) -lm $(CRYPTO_LIBS) $(EXTRALIBS)
 
 radosgw_SOURCES = \
@@ -481,6 +481,8 @@ testkeys_SOURCES += perfglue/heap_profiler.cc
 endif
 
 
+## rados object classes
+
 # rbd: rados block device class
 libcls_rbd_la_SOURCES = cls/rbd/cls_rbd.cc
 libcls_rbd_la_CFLAGS = ${AM_CFLAGS}
@@ -510,14 +512,6 @@ libcls_refcount_la_LDFLAGS = ${AM_LDFLAGS} -version-info 1:0:0 -export-symbols-r
 
 radoslib_LTLIBRARIES += libcls_refcount.la
 
-# sample_demo class
-libcls_sample_demo_la_SOURCES = cls_sample_demo.cc
-libcls_sample_demo_la_CFLAGS = ${AM_CFLAGS}
-libcls_sample_demo_la_CXXFLAGS= ${AM_CXXFLAGS}
-libcls_sample_demo_la_LIBADD = $(PTHREAD_LIBS) $(EXTRALIBS)
-libcls_sample_demo_la_LDFLAGS = ${AM_LDFLAGS} -version-info 1:0:0 -export-symbols-regex '.*__cls_.*'
-
-radoslib_LTLIBRARIES += libcls_sample_demo.la
 
 if WITH_RADOSGW
 # rgw: rados gateway
@@ -539,12 +533,6 @@ noinst_LIBRARIES += libcls_lock_client.a
 libcls_refcount_client_a_SOURCES =  \
 	cls/refcount/cls_refcount_client.cc
 noinst_LIBRARIES += libcls_refcount_client.a
-
-
-libcls_sample_demo_client_a_SOURCES =  \
-	cls_sample_demo_client.cc
-noinst_LIBRARIES += libcls_sample_demo_client.a
-
 
 libcls_rgw_client_a_SOURCES =  \
 	cls/rgw/cls_rgw_client.cc \
@@ -658,7 +646,7 @@ unittest_addrs_LDADD = libglobal.la $(PTHREAD_LIBS) -lm ${UNITTEST_LDADD} $(CRYP
 check_PROGRAMS += unittest_addrs
 
 unittest_workqueue_SOURCES = test/test_workqueue.cc
-unittest_workqueue_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS} 
+unittest_workqueue_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS}
 unittest_workqueue_LDADD = libglobal.la $(PTHREAD_LIBS) -lm ${UNITTEST_LDADD} $(CRYPTO_LIBS) $(EXTRALIBS)
 check_PROGRAMS += unittest_workqueue
 
@@ -865,7 +853,8 @@ bin_DEBUGPROGRAMS += test_librbd_fsx
 test_cls_rbd_SOURCES = test/cls_rbd/test_cls_rbd.cc \
 	test/librados/test.cc \
 	cls/rbd/cls_rbd_client.cc \
-        cls/lock/cls_lock_client.cc \
+        cls/mynamespace/myclass.cc \
+	cls/lock/cls_lock_client.cc \
 	cls/lock/cls_lock_types.cc \
 	cls/lock/cls_lock_ops.cc
 test_cls_rbd_LDADD = librados.la ${UNITTEST_STATIC_LDADD}
@@ -877,11 +866,6 @@ test_cls_refcount_SOURCES = test/cls_refcount/test_cls_refcount.cc \
 test_cls_refcount_LDADD = librados.la libcls_refcount_client.a ${UNITTEST_STATIC_LDADD}
 test_cls_refcount_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS}
 bin_DEBUGPROGRAMS += test_cls_refcount
-
-test_cls_sample_demo_SOURCES = testsample_demo.cc 
-test_cls_sample_demo_LDADD = libcls_sample_demo_client.a librados.la ${UNITTEST_STATIC_LDADD}
-test_cls_sample_demo_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS}
-bin_DEBUGPROGRAMS += test_cls_sample_demo
 
 test_cls_lock_SOURCES = test/cls_lock/test_cls_lock.cc test/librados/test.cc
 test_cls_lock_LDFLAGS = ${AM_LDFLAGS}
@@ -1473,7 +1457,7 @@ noinst_HEADERS = \
 	bash_completion/rados\
 	bash_completion/rbd\
 	bash_completion/radosgw-admin\
-	client/Client.h\
+        client/Client.h\
 	client/Dentry.h\
 	client/Dir.h\
 	client/Fh.h\
@@ -1481,11 +1465,11 @@ noinst_HEADERS = \
 	client/MetaRequest.h\
 	client/MetaSession.h\
 	client/SnapRealm.h\
-	client/SyntheticClient.h\
-	client/Trace.h\
-	client/fuse_ll.h\
+        client/SyntheticClient.h\
+        client/Trace.h\
+        client/fuse_ll.h\
 	client/ioctl.h\
-	client/hadoop/CephFSInterface.h\
+        client/hadoop/CephFSInterface.h\
 	client/ObjecterWriteback.h\
 	cls_acl.cc\
 	cls_crypto.cc\
@@ -1494,10 +1478,9 @@ noinst_HEADERS = \
 	cls/lock/cls_lock_client.h\
 	cls/rbd/cls_rbd.h\
 	cls/rbd/cls_rbd_client.h\
-	cls/refcount/cls_refcount_ops.h\
+	cls/mynamespace/myclass.h\
+        cls/refcount/cls_refcount_ops.h\
 	cls/refcount/cls_refcount_client.h\
-	cls_sample_demo.cc\
-	cls_sample_demo_client.h\
 	cls/rgw/cls_rgw_client.h\
 	cls/rgw/cls_rgw_ops.h\
 	cls/rgw/cls_rgw_types.h\
@@ -2006,11 +1989,10 @@ uninstall-local: uninstall-coverage
 
 # if we are doing a debug build, tell make to actually build the debug
 # targets
-######################################################################
-#if WITH_DEBUG
+if WITH_DEBUG
 bin_PROGRAMS += $(bin_DEBUGPROGRAMS)
-#endif
-######################################################################
+endif
+
 
 #
 # coverity rules expect:

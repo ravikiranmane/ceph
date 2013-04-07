@@ -110,6 +110,8 @@ namespace librbd {
 			  std::vector<string> *names,
 			  std::vector<uint64_t> *sizes,
 			  ::SnapContext *snapc);
+
+    int returnOne();
   } // namespace cls_client
 } // namespace librbd
 #endif // CEPH_LIBRBD_CLS_RBD_CLIENT_H

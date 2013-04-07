@@ -9,6 +9,8 @@
 #include "cls/rbd/cls_rbd.h"
 #include "cls/rbd/cls_rbd_client.h"
 
+//#include "cls/mynamespace/myclass.h"
+
 #include "gtest/gtest.h"
 #include "test/librados/test.h"
 
@@ -48,6 +50,7 @@ using ::librbd::cls_client::set_protection_status;
 using ::librbd::cls_client::get_stripe_unit_count;
 using ::librbd::cls_client::set_stripe_unit_count;
 using ::librbd::cls_client::old_snapshot_add;
+
 
 static char *random_buf(size_t len)
 {
@@ -909,3 +912,4 @@ TEST(cls_rbd, stripingv2)
   ioctx.close();
   ASSERT_EQ(0, destroy_one_pool_pp(pool_name, rados));
 }
+
