@@ -27,14 +27,17 @@ cls_method_handle_t h_sample;
 
 int sample_method(cls_method_context_t ctx, bufferlist* in, bufferlist *out)
 {
-   cls_log(0,"sample_demo:In Sample()");
+   bufferlist::iterator iter = in->begin();
+   string oid;
+   ::decode(oid,iter);
+   cls_log(20,"%s - sample_demo:In Sample()",&oid[0]);
    return 0;
 }
 
 
 void __cls_init()
 {
-   cls_log(0,"Loaded sample_demo class!");
+   cls_log(20,"Loaded sample_demo class!");
 
    cls_register("sample_demo", &h_class);
    cls_register_cxx_method(h_class, "sample", CLS_METHOD_RD, sample_method, &h_sample);

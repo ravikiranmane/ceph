@@ -9,4 +9,4 @@ int initialize(librados::Rados* rados, librados::IoCtx* io_ctx,  char* id,std::s
 
 //int call_sample_demo_method(librados::ObjectWriteOperation* op);
 
-int call_sample_demo_method(librados::ObjectWriteOperation* op, librados::IoCtx io_ctx,string oid);
+int call_sample_demo_method(librados::ObjectWriteOperation* op, librados::IoCtx io_ctx,string oid,bufferlist in);

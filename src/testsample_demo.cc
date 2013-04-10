@@ -110,7 +110,11 @@ int main(int argc, char *argv[])
   // but contents should not have changed
   //ASSERT_FALSE(outbl.contents_equal(inbl2));
   //ASSERT_TRUE(outbl.contents_equal(inbl));
-  printf("operate() returned : %d\n",call_sample_demo_method(op,io_ctx,oid));
+  bufferlist in;
+  //strcpy(buf,oid);   
+  //in.append(buf, sizeof(buf));
+  ::encode(oid,in);
+  printf("operate() returned : %d\n",call_sample_demo_method(op,io_ctx,oid,in));
  
   
   //ASSERT_EQ(0, io_ctx.remove(oid));

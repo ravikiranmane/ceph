@@ -38,9 +38,9 @@ int initialize(librados::Rados* rados, librados::IoCtx* io_ctx,  char* id,std::s
 }
 
 
-int call_sample_demo_method(librados::ObjectWriteOperation* op, librados::IoCtx io_ctx,string oid){
+int call_sample_demo_method(librados::ObjectWriteOperation* op, librados::IoCtx io_ctx,string oid,bufferlist in){
 
- bufferlist in,out;
+ bufferlist out;
  op->exec("cls_sample_demo","sample",in);
  //return io_ctx.exec(oid,op));
  return io_ctx.exec(oid,"sample_demo","sample",in,out); 
