@@ -8,7 +8,8 @@ int main(int argc, char *argv[])
 {
   //sample_demo sd = new sample_demo();
   char buf[128]; 
-  char buf1[128]; 
+  char buf1[128];
+  char buf2[128]; 
   char *id = getenv("CEPH_CLIENT_ID");
   string pool_name = "sample_demo_pool";
   //printf("Program started...");
@@ -74,28 +75,29 @@ int main(int argc, char *argv[])
   // and its contents should match
   */
   
-  strcpy(buf,"Test String");   
+  //////////////////////////////////////////////
+  ///strcpy(buf,"Test String");   
   //memset(buf, 0xcc, sizeof(buf));
-  printf("Writing : %s",buf);
+  ///printf("Writing : %s",buf);
   //bufferlist bl;
-  inbl.append(buf, sizeof(buf));
+  ///inbl.append(buf, sizeof(buf));
   //ASSERT_EQ((int)sizeof(buf), io_ctx.write(oid, inbl, sizeof(buf), 0));
-  io_ctx.write(oid, inbl, sizeof(buf), 0);
+  ///io_ctx.write(oid, inbl, sizeof(buf), 0);
   //ASSERT_EQ((size_t)sizeof(buf), (size_t)io_ctx.read(oid, outbl, sizeof(buf), 0));
-  io_ctx.read(oid, outbl, sizeof(buf), 0);
-  printf("Read from object!\n");
+  ///io_ctx.read(oid, outbl, sizeof(buf), 0);
+  ///printf("Read from object!\n");
   //ASSERT_TRUE(outbl.contents_equal(inbl));
   
 
   //////////////////////////////////////////////
-  outbl.contents_equal(inbl);
+  //outbl.contents_equal(inbl);
   std::string s;
   ////////////////////////////////////////////// 
   //bufferlist::iterator out = outbl.begin();
   
   //////////////////////////////////////////////
-  outbl.copy(0,sizeof(buf1),buf1);
-  printf("Value read : %s\n", buf1);
+  ///outbl.copy(0,sizeof(buf1),buf1);
+  ///printf("Value read : %s\n", buf1);
   //////////////////////////////////////////////
   // now send different data, but with a preexisting object
   //bufferlist inbl2;
@@ -110,12 +112,31 @@ int main(int argc, char *argv[])
   // but contents should not have changed
   //ASSERT_FALSE(outbl.contents_equal(inbl2));
   //ASSERT_TRUE(outbl.contents_equal(inbl));
-  bufferlist in;
+  bufferlist in,outbl2;
   //strcpy(buf,oid);   
   //in.append(buf, sizeof(buf));
   ::encode(oid,in);
   printf("operate() returned : %d\n",call_sample_demo_method(op,io_ctx,oid,in));
  
+  io_ctx.read(oid, outbl2, sizeof(buf), 0);
+  printf("Read from object!\n");
+  //ASSERT_TRUE(outbl.contents_equal(inbl));
+  
+
+  //////////////////////////////////////////////
+  //outbl.contents_equal(inbl);
+  
+  ////////////////////////////////////////////// 
+  //bufferlist::iterator out = outbl2.begin();
+  //string x;
+  //::decode(x,out);
+  //////////////////////////////////////////////
+  outbl2.copy(0,outbl2.length(),buf2);
+  printf("Value read second time : %s\n", buf2);
+  //printf("Value read second time : %s\n", &x);
+  //////////////////////////////////////////////
+  
+  
   
   //ASSERT_EQ(0, io_ctx.remove(oid));
   io_ctx.remove(oid);
@@ -129,4 +150,5 @@ int main(int argc, char *argv[])
   
   return 0;
 }
+
 

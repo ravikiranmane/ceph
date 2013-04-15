@@ -16,6 +16,7 @@
 #include "common/dout.h"
 #include "common/errno.h"
 
+#include <execinfo.h>
 #include <errno.h>
 #include <inttypes.h>
 #include <map>
@@ -97,6 +98,8 @@ PerfCounters::~PerfCounters()
 
 void PerfCounters::inc(int idx, uint64_t amt)
 {
+  void* b[100];
+  backtrace(b,100);
   if (!m_cct->_conf->perf)
     return;
 

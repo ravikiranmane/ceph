@@ -13,11 +13,11 @@ EXTRA_DIST += \
 
 
 all-local:
-if WITH_DEBUG
+#################################if WITH_DEBUG
 #	We need gtest to build the rados-api tests. We only build those in
 #	a debug build, though.
 	@cd src/gtest && $(MAKE) $(AM_MAKEFLAGS) lib/libgtest.a lib/libgtest_main.a
-endif
+##############################endif
 
 check-local:
 #	We build gtest this way, instead of using SUBDIRS, because with that,
