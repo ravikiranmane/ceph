@@ -42,11 +42,24 @@ int sample_method(cls_method_context_t ctx, bufferlist* in, bufferlist *out)
    bl.append(oid.c_str(),oid.length());
    cls_cxx_write(ctx,0,bl.length(),&bl);
    cls_log(20,"Written data from object class : %s\n", oid.c_str());
-   //cls_cxx_read(ctx,0,bl.length(),&out1);
-   //char outdata[128];
-   //out1.copy(0,bl.length(),outdata);
-   //cls_log(20,"Value of the object read from object class : %s\n", outdata);
    //}
+   return 0;
+}
+
+int sample_method_read(cls_method_context_t ctx, bufferlist* in, bufferlist *out)
+{
+   bufferlist::iterator iter = in->begin();
+   
+   string oid;
+   ::decode(oid,iter);
+   bufferlist out1(oid.length());   
+   int length_read = cls_cxx_read(ctx,0,oid.length(),&out1);
+   char outdata[128];
+   //bufferlist::iterator iter1 = out1.begin();
+   
+   out1.copy(0,oid.length(),outdata);
+   //::decode(outdata,iter1);
+   cls_log(20,"Value of the object read from object class : %s\n", outdata);
    return 0;
 }
 
@@ -56,8 +69,9 @@ void __cls_init()
    cls_log(20,"Loaded sample_demo class!");
 
    cls_register("sample_demo", &h_class);
-   cls_register_cxx_method(h_class, "sample", CLS_METHOD_RD | CLS_METHOD_WR, sample_method, &h_sample);
 
+   cls_register_cxx_method(h_class, "sample", CLS_METHOD_RD | CLS_METHOD_WR, sample_method, &h_sample);
+   cls_register_cxx_method(h_class, "sample_read", CLS_METHOD_RD, sample_method_read, &h_sample);
    return;
 }
 
