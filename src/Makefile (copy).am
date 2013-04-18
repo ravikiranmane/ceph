@@ -370,7 +370,7 @@ noinst_LIBRARIES += librgw.a
 
 my_radosgw_ldadd = \
        libglobal.la librgw.a librados.la libcls_rgw_client.a \
-       libcls_lock_client.a libcls_refcount_client.a libcls_sample_demo_client.a libcls_encryptor_object_client.a -lcurl -lexpat \
+       libcls_lock_client.a libcls_refcount_client.a libcls_sample_demo_client.a libcls_object_class_test_client.a -lcurl -lexpat \
        $(PTHREAD_LIBS) -lm $(CRYPTO_LIBS) $(EXTRALIBS)
 
 radosgw_SOURCES = \
@@ -519,14 +519,14 @@ libcls_sample_demo_la_LDFLAGS = ${AM_LDFLAGS} -version-info 1:0:0 -export-symbol
 
 radoslib_LTLIBRARIES += libcls_sample_demo.la
 
-# encryptor_object class
-libcls_encryptor_object_la_SOURCES = encryptorclass/encryptor_object.cc
-libcls_encryptor_object_la_CFLAGS = ${AM_CFLAGS}
-libcls_encryptor_object_la_CXXFLAGS= ${AM_CXXFLAGS}
-libcls_encryptor_object_la_LIBADD = $(PTHREAD_LIBS) $(EXTRALIBS)
-libcls_encryptor_object_la_LDFLAGS = ${AM_LDFLAGS} -version-info 1:0:0 -export-symbols-regex '.*__cls_.*'
+# object_class_test class
+libcls_object_class_test_la_SOURCES = objectclasstest/cls_object_class_test.cc
+libcls_object_class_test_la_CFLAGS = ${AM_CFLAGS}
+libcls_object_class_test_la_CXXFLAGS= ${AM_CXXFLAGS}
+libcls_object_class_test_la_LIBADD = $(PTHREAD_LIBS) $(EXTRALIBS)
+libcls_object_class_test_la_LDFLAGS = ${AM_LDFLAGS} -version-info 1:0:0 -export-symbols-regex '.*__cls_.*'
 
-radoslib_LTLIBRARIES += libcls_encryptor_object.la
+radoslib_LTLIBRARIES += libcls_object_class_test.la
 
 if WITH_RADOSGW
 # rgw: rados gateway
@@ -554,9 +554,9 @@ libcls_sample_demo_client_a_SOURCES =  \
 	cls_sample_demo_client.cc
 noinst_LIBRARIES += libcls_sample_demo_client.a
 
-libcls_encryptor_object_client_a_SOURCES =  \
-	encryptorclass/cls_encryptor_object_client.cc
-noinst_LIBRARIES += libcls_encryptor_object_client.a
+libcls_object_class_test_client_a_SOURCES =  \
+	objectclasstest/cls_object_class_test_client.cc
+noinst_LIBRARIES += libcls_object_class_test_client.a
 
 libcls_rgw_client_a_SOURCES =  \
 	cls/rgw/cls_rgw_client.cc \
@@ -895,15 +895,15 @@ test_cls_sample_demo_LDADD = libcls_sample_demo_client.a librados.la ${UNITTEST_
 test_cls_sample_demo_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS}
 bin_DEBUGPROGRAMS += test_cls_sample_demo
 
-encryptor_object_driver1_SOURCES = encryptorclass/encryptor_object_driver1.cc 
-encryptor_object_driver1_LDADD = libcls_encryptor_object_client.a librados.la ${UNITTEST_STATIC_LDADD}
-encryptor_object_driver1_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS}
-bin_DEBUGPROGRAMS += encryptor_object_driver1
+object_class_test_driver1_SOURCES = objectclasstest/object_class_test_driver1.cc 
+object_class_test_driver1_LDADD = libcls_object_class_test_client.a librados.la ${UNITTEST_STATIC_LDADD}
+object_class_test_driver1_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS}
+bin_DEBUGPROGRAMS += object_class_test_driver1
 
-encryptor_object_driver2_SOURCES = encryptorclass/encryptor_object_driver2.cc 
-encryptor_object_driver2_LDADD = libcls_encryptor_object_client.a librados.la ${UNITTEST_STATIC_LDADD}
-encryptor_object_driver2_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS}
-bin_DEBUGPROGRAMS += encryptor_object_driver2
+object_class_test_driver2_SOURCES = objectclasstest/object_class_test_driver2.cc 
+object_class_test_driver2_LDADD = libcls_object_class_test_client.a librados.la ${UNITTEST_STATIC_LDADD}
+object_class_test_driver2_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS}
+bin_DEBUGPROGRAMS += object_class_test_driver2
 
 test_cls_lock_SOURCES = test/cls_lock/test_cls_lock.cc test/librados/test.cc
 test_cls_lock_LDFLAGS = ${AM_LDFLAGS}
@@ -1520,8 +1520,8 @@ noinst_HEADERS = \
 	cls/refcount/cls_refcount_client.h\
 	cls_sample_demo.cc\
 	cls_sample_demo_client.h\
-	encryptorclass/encryptor_object.cc\
-	encryptorclass/cls_encryptor_object_client.h\
+	objectclasstest/cls_object_class_test.cc\
+	objectclasstest/cls_object_class_test_client.h\
 	cls/rgw/cls_rgw_client.h\
 	cls/rgw/cls_rgw_ops.h\
 	cls/rgw/cls_rgw_types.h\

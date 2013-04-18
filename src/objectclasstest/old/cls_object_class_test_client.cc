@@ -1,13 +1,12 @@
 #include "include/types.h"
 #include "include/rados/librados.hpp"
-#include "cls_sample_demo_client.h"
+#include "objectclasstest/cls_object_class_test_client.h"
 //#include "gtest/gtest.h"
 
 using namespace librados;
 
 int initialize(librados::Rados* rados, librados::IoCtx* io_ctx,  char* id,std::string pool_name){
 
-  //printf("Program started...");
   int r = rados->init(id);
     if (r < 0)
       return r;
@@ -38,15 +37,15 @@ int initialize(librados::Rados* rados, librados::IoCtx* io_ctx,  char* id,std::s
 }
 
 
-int call_sample_demo_method(librados::ObjectWriteOperation* op, librados::IoCtx io_ctx,string oid,bufferlist in){
+int encrypt_data_at_object_level(librados::ObjectWriteOperation* op, librados::IoCtx io_ctx,string oid,bufferlist in){
 
  bufferlist out;
- op->exec("cls_sample_demo","sample",in);
- io_ctx.exec(oid,"sample_demo","sample",in,out);
- op->exec("cls_sample_demo","sample_read",in);
- 
- int ret = io_ctx.exec(oid,"sample_demo","sample_read",in,out);
- return ret;
+ op->exec("cls_object_class_test","object_class_write",in);
+ int ret = io_ctx.exec(oid,"cls_object_class_test","object_class_write",in,out);
+ return 0;
+ //return ret;
+ //int ret = io_ctx.exec(oid,"cls_object_class_test","object_class_read_method",in,out);
+ //return ret;
 }
 
 
