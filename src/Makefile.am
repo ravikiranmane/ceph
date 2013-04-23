@@ -519,12 +519,18 @@ libcls_sample_demo_la_LDFLAGS = ${AM_LDFLAGS} -version-info 1:0:0 -export-symbol
 
 radoslib_LTLIBRARIES += libcls_sample_demo.la
 
+#encryptor_object_driver1_SOURCES = encryptorclass/encryptor_object_driver1.cc 
+#encryptor_object_driver1_LDFLAGS = ${CRYPTO_LDFLAGS} ${AM_LDFLAGS} ${LIBGLOBAL_LDA} ${UNITTEST_LDADD}
+#encryptor_object_driver1_LDADD = libcls_encryptor_object_client.a librados.la ${UNITTEST_STATIC_LDADD} $(LIBGLOBAL_LDA)
+#encryptor_object_driver1_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS} ${CRYPTO_CXXFLAGS} -lcrypto
+#bin_DEBUGPROGRAMS += encryptor_object_driver1
+
 # encryptor_object class
 libcls_encryptor_object_la_SOURCES = encryptorclass/encryptor_object.cc
 libcls_encryptor_object_la_CFLAGS = ${AM_CFLAGS}
-libcls_encryptor_object_la_CXXFLAGS= ${AM_CXXFLAGS}
-libcls_encryptor_object_la_LIBADD = $(PTHREAD_LIBS) $(EXTRALIBS)
-libcls_encryptor_object_la_LDFLAGS = ${AM_LDFLAGS} -version-info 1:0:0 -export-symbols-regex '.*__cls_.*'
+libcls_encryptor_object_la_CXXFLAGS= ${AM_CXXFLAGS} 
+libcls_encryptor_object_la_LIBADD = $(PTHREAD_LIBS) $(EXTRALIBS) 
+libcls_encryptor_object_la_LDFLAGS = -lcrypto ${AM_LDFLAGS} -version-info 1:0:0 -export-symbols-regex '.*__cls_.*' 
 
 radoslib_LTLIBRARIES += libcls_encryptor_object.la
 
@@ -895,9 +901,14 @@ test_cls_sample_demo_LDADD = libcls_sample_demo_client.a librados.la ${UNITTEST_
 test_cls_sample_demo_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS}
 bin_DEBUGPROGRAMS += test_cls_sample_demo
 
+#unittest_crypto_LDFLAGS = ${CRYPTO_LDFLAGS} ${AM_LDFLAGS}
+#unittest_crypto_LDADD =  ${LIBGLOBAL_LDA} ${UNITTEST_LDADD}
+#unittest_crypto_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS}
+
 encryptor_object_driver1_SOURCES = encryptorclass/encryptor_object_driver1.cc 
-encryptor_object_driver1_LDADD = libcls_encryptor_object_client.a librados.la ${UNITTEST_STATIC_LDADD}
-encryptor_object_driver1_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS}
+encryptor_object_driver1_LDFLAGS = ${CRYPTO_LDFLAGS} ${AM_LDFLAGS} ${LIBGLOBAL_LDA} ${UNITTEST_LDADD}
+encryptor_object_driver1_LDADD = libcls_encryptor_object_client.a librados.la ${UNITTEST_STATIC_LDADD} $(LIBGLOBAL_LDA)
+encryptor_object_driver1_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS} ${CRYPTO_CXXFLAGS} -lcrypto
 bin_DEBUGPROGRAMS += encryptor_object_driver1
 
 encryptor_object_driver2_SOURCES = encryptorclass/encryptor_object_driver2.cc 
