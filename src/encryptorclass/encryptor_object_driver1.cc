@@ -4,7 +4,8 @@
 #include <openssl/aes.h>
 
 using namespace librados;
-int DATA_SIZE = 2097152;
+//int DATA_SIZE = 2097152;
+int DATA_SIZE = 102400;
 int main(int argc, char *argv[])
 {
 
@@ -15,27 +16,31 @@ int main(int argc, char *argv[])
   long starttime = 0,totaltime = 0; 
   char *id = getenv("CEPH_CLIENT_ID");
   string pool_name = "cls_encryptor_object_pool";
-  //printf("Program started...");
+  printf("Program started...");
   librados::Rados rados;
   librados::IoCtx io_ctx;
   librados::ObjectWriteOperation* op = new librados::ObjectWriteOperation();
   initialize(&rados,&io_ctx,id,pool_name);
   string oid = "cls_encryptor_object_oid";
   bufferlist inbl, outbl, inbl1;
+
   //strcpy(buf,"Test String");   
   memset(buf,'a',DATA_SIZE);
   inbl.append(buf, sizeof(buf));
   ////printf("Value in buf : %s\nbuf size : %d\n", buf,sizeof(buf));
+  printf("\nWriting data to object...");
   //io_ctx.write(oid, inbl, sizeof(buf), 0);
   io_ctx.write(oid, inbl, DATA_SIZE, 0);
   //Start timer
   //Read it out now!
   //io_ctx.read(oid, outbl, sizeof(buf), 0);
+  printf("\nWritten data to object...\nStarting timer...");
   starttime = clock();
+  printf("\nTimer started...\nReading data from object...");
   io_ctx.read(oid, outbl, DATA_SIZE, 0);
   outbl.copy(0,DATA_SIZE,buf1);
   ////printf("Value read : %s\nbuf1 size : %d\n", buf1,sizeof(buf1));
-  
+  printf("\nData read from the object...\nAbout to start encryption process...");
   //Perform operation now -- the AES encryption part
   int bytes_read, bytes_written;
   //unsigned char indata[AES_BLOCK_SIZE];
@@ -76,17 +81,18 @@ int main(int argc, char *argv[])
   //Remove the old object and then 
   //Store contents in new object with same object ID.
   ////printf("Value encrypted : %s \n outdata size is : %d\n", outdata,sizeof(outdata));
+  printf("\nData encrypted...\nAbout to write back data...");
   io_ctx.remove(oid);
   
   inbl1.append((const char*)outdata, sizeof(outdata));
   io_ctx.write(oid, inbl1, sizeof(outdata), 0);
   //End timer
-  printf("Encrypted data written to the object");
+  printf("\nEncrypted data written back to the object...");
   totaltime = clock();
-  printf("Start time : %ld\n End time : %ld",starttime,totaltime);
+  printf("\nTimer stopped...\nStart time : %ld\n End time : %ld",starttime,totaltime);
   totaltime -= starttime;
   
-  printf("Total time taken : %ld\n",totaltime);
+  printf("\nTotal time taken : %ld\n",totaltime);
   io_ctx.read(oid, outbl, sizeof(buf2), 0);
   outbl.copy(0,sizeof(buf2),buf2);
   ////printf("Value read after operation : %s\n", buf2);

@@ -8,6 +8,8 @@ int main(int argc, char *argv[])
 {
   //sample_demo sd = new sample_demo();
   int DATA_SIZE = 2097152;
+  //int DATA_SIZE = 1048576;
+  //int DATA_SIZE = 1572864;
   char buf[DATA_SIZE]; 
   char buf1[DATA_SIZE];
   char buf2[DATA_SIZE]; 
@@ -32,8 +34,8 @@ int main(int argc, char *argv[])
  
   //::encode(oid,in);
   ::encode(DATA_SIZE,in);
-  starttime = clock();  
+  //starttime = clock();  
   printf("exec() returned : %d\n",encrypt_data_at_object_level(op,io_ctx,oid,in));
   totaltime = clock() - starttime;
-  printf("Total time : %ld", totaltime);  
+  //printf("Total time : %ld", totaltime);  
 }

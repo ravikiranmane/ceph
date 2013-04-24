@@ -1,0 +1,43 @@
+Hello Sam,
+
+I understand you had suggested using compression instead of encryption for testing however I just wanted to try encryption as I am familiar with encryption and had used it earlier in projects. I will be working on compression later.
+And as I was trying and playing around ceph objects by throwing random size data to it seems it is failing when I send more than 1MB data.
+
+Here is the stack trace from logs :
+
+    -2> 2013-04-23 13:26:27.628848 aefa3b40 10 filestore(dev/osd0) _do_op 0xa8eeb40 seq 190 r = 0, finisher 0xa761510 0
+    -1> 2013-04-23 13:26:27.628851 aefa3b40 10 filestore(dev/osd0) _finish_op 0xa8eeb40 seq 190 osr(1.5 0xa602640)/0xa602640
+     0> 2013-04-23 13:26:27.629462 a7794b40 -1 *** Caught signal (Aborted) **
+ in thread a7794b40
+
+ ceph version 0.56-706-g16fa3cb (16fa3cbe8bedcfa6e6a2d526fd9ce360441aad9a)
+ 1: ./ceph-osd() [0x83ef373]
+ 2: [0xb7775400]
+ 3: [0xb7775424]
+ 4: (gsignal()+0x4f) [0xb6fe81df]
+ 5: (abort()+0x175) [0xb6feb825]
+ 6: (__gnu_cxx::__verbose_terminate_handler()+0x14d) [0xb725b13d]
+ 7: (()+0xaaed3) [0xb7258ed3]
+ 8: (()+0xaaf0f) [0xb7258f0f]
+ 9: (()+0xab05e) [0xb725905e]
+ 10: ./ceph-osd() [0x84b560a]
+ 11: (ReplicatedPG::do_osd_ops(ReplicatedPG::OpContext*, std::vector<OSDOp, std::allocator<OSDOp> >&)+0x25a5) [0x81e6065]
+ 12: (ReplicatedPG::prepare_transaction(ReplicatedPG::OpContext*)+0x81) [0x81efcc1]
+ 13: (ReplicatedPG::do_op(std::tr1::shared_ptr<OpRequest>)+0x354b) [0x81f893b]
+ 14: (PG::do_request(std::tr1::shared_ptr<OpRequest>)+0x2df) [0x82dbaaf]
+ 15: (OSD::dequeue_op(boost::intrusive_ptr<PG>, std::tr1::shared_ptr<OpRequest>)+0x373) [0x8239273]
+ 16: (OSD::OpWQ::_process(boost::intrusive_ptr<PG>)+0x461) [0x824ffd1]
+ 17: (ThreadPool::WorkQueueVal<std::pair<boost::intrusive_ptr<PG>, std::tr1::shared_ptr<OpRequest> >, boost::intrusive_ptr<PG> >::_process(boost::intrusive_ptr<PG>, ThreadPool::TPHandle&)+0x3b) [0x828f2ab]
+ 18: (ThreadPool::WorkQueueVal<std::pair<boost::intrusive_ptr<PG>, std::tr1::shared_ptr<OpRequest> >, boost::intrusive_ptr<PG> >::_void_process(void*, ThreadPool::TPHandle&)+0x97) [0x828f4c7]
+ 19: (ThreadPool::worker(ThreadPool::WorkThread*)+0x488) [0x84a7548]
+ 20: (ThreadPool::WorkThread::entry()+0x22) [0x84a9662]
+ 21: (Thread::_entry_func(void*)+0xf) [0x849e69f]
+ 22: (()+0x6d4c) [0xb7743d4c]
+ 23: (clone()+0x5e) [0xb70a8d3e]
+ NOTE: a copy of the executable, or `objdump -rdS <executable>` is needed to interpret this.
+
+Also, is the following in ceph.conf used to set size each object can hold ?
+
+osd journal size = 100 //[in MB]
+
+Attaching the log and the driver program.

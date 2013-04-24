@@ -59,7 +59,10 @@ int encrypt_data_at_object_level(librados::ObjectWriteOperation* op, librados::I
  //object_class_level_encryption
  starttime = clock();
  ret = io_ctx.exec(oid,"encryptor_object","object_class_level_encryption",in1,out);
- printf("Total time from client : %ld",clock() - starttime);
+ endtime = clock();
+ printf("Start time : %ld",starttime);
+ printf("End time : %ld",endtime); 
+ printf("Total time from client : %ld",endtime - starttime);
  return ret;
 }
 

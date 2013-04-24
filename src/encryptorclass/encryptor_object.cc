@@ -56,7 +56,7 @@ int object_class_read(cls_method_context_t ctx, bufferlist* in, bufferlist *out)
 
 int object_class_level_encryption(cls_method_context_t ctx, bufferlist* in, bufferlist *out)
 {
-  int DATA_SIZE = 1024;
+  int DATA_SIZE = -1;
   int bytes_read, bytes_written;
   //unsigned char indata[AES_BLOCK_SIZE];
   //unsigned char outdata[AES_BLOCK_SIZE];
